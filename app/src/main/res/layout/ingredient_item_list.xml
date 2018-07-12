@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingVertical="@dimen/medium_spacing">
+
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_radio_button_unchecked"
+        android:paddingHorizontal="@dimen/medium_spacing"/>
+
+    <TextView
+        android:id="@+id/tv_ingredient_qty"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="4"
+        android:paddingHorizontal="@dimen/small_spacing"/>
+    <TextView
+        android:id="@+id/tv_ingredient_measure"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Oz"/>
+    <TextView
+        android:id="@+id/tv_ingredient_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="heavy cream (cold)"
+        android:layout_marginLeft="4dp"
+        android:layout_marginStart="4dp"/>
+
+</LinearLayout>

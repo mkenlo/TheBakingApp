@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="@dimen/medium_spacing">
+
+
+        <TextView
+            android:id="@+id/tv_recipe_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/medium_spacing"
+            android:layout_marginTop="@dimen/medium_spacing"
+            android:text="Banana Bread"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Ingredients"
+            android:layout_marginTop="@dimen/medium_spacing"
+            android:layout_marginBottom="@dimen/medium_spacing"/>
+
+        <android.support.v7.widget.RecyclerView
+            android:id = "@+id/rv_ingredient_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:overScrollMode="never"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Directions"
+            android:layout_marginTop="@dimen/medium_spacing"
+            android:layout_marginBottom="@dimen/medium_spacing"/>
+
+        <android.support.v7.widget.RecyclerView
+            android:id = "@+id/rv_step_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:overScrollMode="never"/>
+    </LinearLayout>
+
+
+</android.support.v4.widget.NestedScrollView>

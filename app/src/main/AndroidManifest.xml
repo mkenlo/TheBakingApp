@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.mkenlo.baking">
+    <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
         android:allowBackup="true"
@@ -23,7 +24,12 @@
             android:value="com.mkenlo.baking.RecipeActivity" />
         </activity>
 
-        <activity android:name=".RecipeStepActivity"></activity>
+        <activity android:name=".RecipeStepActivity"
+            android:parentActivityName=".RecipeDetailActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.mkenlo.baking.RecipeDetailActivity" />
+        </activity>
     </application>
 
 </manifest>

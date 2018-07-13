@@ -46,4 +46,9 @@ public class DataUtils {
     public List<Recipe> getData(){
         return mData;
     }
+
+    public RecipeSteps getRecipeStep(long recipeId, long stepId){
+
+        return mData.get((int) recipeId).getSteps().get((int)stepId);
+    }
 }

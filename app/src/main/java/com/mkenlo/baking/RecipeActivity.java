@@ -11,10 +11,12 @@ import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.mkenlo.baking.model.DataUtils;
 import com.mkenlo.baking.model.Recipe;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -49,8 +51,9 @@ public class RecipeActivity extends AppCompatActivity {
 
                 Recipe item = (Recipe) view.getTag();
                 Intent intent = new Intent(view.getContext(), RecipeDetailActivity.class);
-                Bundle args =  new Bundle();
-                args.putLong(RecipeDetailActivity.ARG_RECIPE_ID, item.getID() );
+
+
+                intent.putExtra(RecipeDetailActivity.ARG_RECIPE_ID, item.getID() );
                 startActivity(intent);
             }
 
@@ -72,6 +75,13 @@ public class RecipeActivity extends AppCompatActivity {
         @Override
         public void onBindViewHolder(@NonNull RecipeListAdapter.ViewHolder holder, int position) {
             holder.name.setText(mValues.get(position).getName());
+            int dummyIcon = R.drawable.ic_muffin;
+            if(!mValues.get(position).getImage().isEmpty())
+                Picasso.get()
+                        .load(mValues.get(position).getImage())
+                        .placeholder(dummyIcon)
+                        .into(holder.dummyIcon);
+
 
             holder.itemView.setTag(mValues.get(position));
             holder.itemView.setOnClickListener(mOnClickListener);
@@ -84,6 +94,7 @@ public class RecipeActivity extends AppCompatActivity {
 
         public class ViewHolder extends RecyclerView.ViewHolder{
             @BindView(R.id.tv_recipe_name) TextView name;
+            @BindView(R.id.iv_dummy_icon)  ImageView dummyIcon;
             public ViewHolder(View itemView) {
                 super(itemView);
                 ButterKnife.bind(this, itemView);
@@ -99,4 +110,5 @@ public class RecipeActivity extends AppCompatActivity {
         float screenWidth = outMetrics.widthPixels;
         return Math.round(screenWidth / defaultSize);
     }
+
 }

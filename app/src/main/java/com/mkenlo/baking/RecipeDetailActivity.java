@@ -25,11 +25,14 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class RecipeDetailActivity extends AppCompatActivity implements RecipeStepFragment.OnFragmentInteractionListener {
+public class RecipeDetailActivity extends AppCompatActivity
+        implements RecipeStepFragment.OnFragmentInteractionListener {
 
 
     public static String ARG_RECIPE_ID = "recipe id";
-    @BindView(R.id.frag_recipe_step_container) FrameLayout mFragmentContainer;
+    public static String ARG_RECIPE_NAME = "recipe name";
+
+    private Recipe mRecipe;
     private boolean mTwoPane;
 
 
@@ -38,7 +41,6 @@ public class RecipeDetailActivity extends AppCompatActivity implements RecipeSte
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe_detail);
 
-        ButterKnife.bind(this);
 
         // Show the Up button in the action bar.
         ActionBar actionBar = getSupportActionBar();
@@ -47,17 +49,21 @@ public class RecipeDetailActivity extends AppCompatActivity implements RecipeSte
         }
 
 
-        int recipeID = (int) getIntent().getLongExtra(ARG_RECIPE_ID, 0);
-        Recipe recipe = new DataUtils(this).getData().get(recipeID);
 
-        if(mFragmentContainer!=null){
+        int recipeID = (int) getIntent().getLongExtra(ARG_RECIPE_ID, 0);
+        mRecipe = new DataUtils(this).getData().get(recipeID-1);
+
+        if(findViewById(R.id.frag_recipe_step_container)!=null){
             mTwoPane = true;
             if (savedInstanceState == null) {
                 // Create the detail fragment and add it to the activity
                 // using a fragment transaction.
+
                 Bundle arguments = new Bundle();
-                arguments.putParcelable(RecipeStepFragment.ARG_STEP_ITEM,
-                        recipe.getSteps().get(0));
+
+               arguments.putParcelable(RecipeStepFragment.ARG_STEP_ITEM,
+                        mRecipe.getSteps().get(0));
+
 
                 RecipeStepFragment fragment = new RecipeStepFragment();
                 fragment.setArguments(arguments);
@@ -72,26 +78,30 @@ public class RecipeDetailActivity extends AppCompatActivity implements RecipeSte
 
 
         // Rename UI title
-        getSupportActionBar().setTitle(recipe.getName());
 
-        ((TextView) findViewById(R.id.tv_recipe_name)).setText(recipe.getName());
+        actionBar.setTitle(mRecipe.getName());
+
+
+        ((TextView) findViewById(R.id.tv_recipe_name)).setText(mRecipe.getName());
         RecyclerView ingredientList = findViewById(R.id.rv_ingredient_list);
         ingredientList.setLayoutManager(new LinearLayoutManager(this));
-        ingredientList.setAdapter(new IngredientListAdapter(recipe.getIngredients()));
+        ingredientList.setAdapter(new IngredientListAdapter(mRecipe.getIngredients()));
 
         RecyclerView stepList = findViewById(R.id.rv_step_list);
         stepList.setLayoutManager(new LinearLayoutManager(this));
-        stepList.setAdapter(new StepListAdapter(recipe.getSteps()));
+        stepList.setAdapter(new StepListAdapter(mRecipe.getSteps()));
+
+
 
     }
 
+    private void setupFragmentUI(RecipeSteps item){
 
-    public void onRecipeStepSelected(View view){
-
-        RecipeSteps item = (RecipeSteps) view.getTag();
         if (mTwoPane) {
             Bundle arguments = new Bundle();
+            arguments.putString(ARG_RECIPE_NAME, mRecipe.getName());
             arguments.putParcelable(RecipeStepActivity.ARG_STEP_ITEM, item);
+
             RecipeStepFragment fragment = new RecipeStepFragment();
             fragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction()
@@ -100,19 +110,27 @@ public class RecipeDetailActivity extends AppCompatActivity implements RecipeSte
         } else {
             Intent intent = new Intent(this, RecipeStepActivity.class);
             intent.putExtra(RecipeStepActivity.ARG_STEP_ITEM, item);
+            intent.putExtra(ARG_RECIPE_NAME, mRecipe.getName());
             startActivity(intent);
         }
     }
 
+    public void onRecipeStepSelected(View view){
 
+        RecipeSteps item = (RecipeSteps) view.getTag();
+        setupFragmentUI(item);
 
-    @Override
-    public void onFragmentInteraction(Uri uri) {
-        Log.d("FRAGMENT_INTERACTION", "Here is my callBack from Fragment");
     }
 
 
+    @Override
+    public void onButtonNextStepSelected(long position) {
+        if((int) position < mRecipe.getSteps().size()){
+            RecipeSteps nextStep = mRecipe.getSteps().get((int)position);
+            setupFragmentUI(nextStep);
+        }
 
+    }
 
 
     public class IngredientListAdapter
@@ -136,9 +154,10 @@ public class RecipeDetailActivity extends AppCompatActivity implements RecipeSte
         @Override
         public void onBindViewHolder(@NonNull IngredientListAdapter.ViewHolder holder,
                                      int position) {
-            holder.mQuantity.setText(String.valueOf(mIngredients.get(position).getQuantity()));
-            holder.mMeasure.setText(mIngredients.get(position).getMeasure());
-            holder.mIngredientName.setText(mIngredients.get(position).getIngredient());
+            String ingredient = mIngredients.get(position).getQuantity() + " "+
+                    mIngredients.get(position).getMeasure() + " " +
+                    mIngredients.get(position).getIngredient();
+            holder.mIngredientName.setText(ingredient);
 
         }
 
@@ -148,9 +167,7 @@ public class RecipeDetailActivity extends AppCompatActivity implements RecipeSte
         }
 
         class ViewHolder extends RecyclerView.ViewHolder {
-            @BindView(R.id.tv_ingredient_qty) TextView mQuantity;
-            @BindView(R.id.tv_ingredient_measure) TextView mMeasure;
-            @BindView(R.id.tv_ingredient_name) TextView mIngredientName;
+            @BindView(R.id.tv_ingredient) TextView mIngredientName;
 
             public ViewHolder(View itemView) {
                 super(itemView);
@@ -167,6 +184,7 @@ public class RecipeDetailActivity extends AppCompatActivity implements RecipeSte
             @Override
             public void onClick(View v) {
                 onRecipeStepSelected(v);
+                v.setBackgroundResource(R.color.colorPrimaryLight);
             }
         };
 
@@ -191,6 +209,7 @@ public class RecipeDetailActivity extends AppCompatActivity implements RecipeSte
 
             holder.itemView.setTag(mSteps.get(position));
             holder.itemView.setOnClickListener(mOnClickListener);
+
         }
 
         @Override

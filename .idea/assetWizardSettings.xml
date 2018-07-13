@@ -28,8 +28,9 @@
                         </option>
                         <option name="values">
                           <map>
-                            <entry key="outputName" value="ic_radio_button_unchecked" />
-                            <entry key="sourceFile" value="C:\Users\Melanie Lontsi" />
+                            <entry key="assetSourceType" value="FILE" />
+                            <entry key="outputName" value="ic_piece_of_cake" />
+                            <entry key="sourceFile" value="C:\Users\Melanie Lontsi\Downloads\piece-of-cake.svg" />
                           </map>
                         </option>
                       </PersistentState>

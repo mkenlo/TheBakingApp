@@ -10,26 +10,16 @@
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_radio_button_unchecked"
-        android:paddingHorizontal="@dimen/medium_spacing"/>
+        android:paddingLeft="@dimen/medium_spacing"
+        android:paddingRight="@dimen/medium_spacing"
+        android:paddingTop="4dp"
+        android:src="@drawable/ic_radio_button_unchecked" />
+
 
     <TextView
-        android:id="@+id/tv_ingredient_qty"
+        android:id="@+id/tv_ingredient"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="4"
-        android:paddingHorizontal="@dimen/small_spacing"/>
-    <TextView
-        android:id="@+id/tv_ingredient_measure"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Oz"/>
-    <TextView
-        android:id="@+id/tv_ingredient_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="heavy cream (cold)"
-        android:layout_marginLeft="4dp"
-        android:layout_marginStart="4dp"/>
+        android:text="4 oz heavy cream (cold)"/>
 
 </LinearLayout>

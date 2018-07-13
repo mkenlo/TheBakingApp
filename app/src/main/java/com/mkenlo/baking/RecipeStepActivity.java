@@ -1,6 +1,7 @@
 package com.mkenlo.baking;
 
 import android.net.Uri;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -9,10 +10,20 @@ public class RecipeStepActivity extends AppCompatActivity  implements RecipeStep
 
 
     public static String ARG_STEP_ITEM = "recipe step object";
+    public static String ARG_RECIPE_NAME = "recipe name";
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe_step);
+
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+
+        }
+
 
 
         RecipeStepFragment fragment = new RecipeStepFragment();
@@ -26,9 +37,10 @@ public class RecipeStepActivity extends AppCompatActivity  implements RecipeStep
 
     }
 
-
     @Override
-    public void onFragmentInteraction(Uri uri) {
+    public void onButtonNextStepSelected(long nextPosition) {
         Log.d("FRAGMENT_INTERACTION", "Here is my callBAck from Fragment");
     }
+
+
 }

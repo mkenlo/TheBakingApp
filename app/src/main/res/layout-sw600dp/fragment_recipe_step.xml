@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    tools:context=".RecipeStepFragment"
+    android:padding="@dimen/medium_spacing">
+
+
+    <com.google.android.exoplayer2.ui.PlayerView
+        android:id="@+id/step_video_view"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/video_height"
+        android:layout_weight="0.50">
+
+    </com.google.android.exoplayer2.ui.PlayerView>
+
+    <include layout="@layout/step_item_detail"/>
+
+</LinearLayout>

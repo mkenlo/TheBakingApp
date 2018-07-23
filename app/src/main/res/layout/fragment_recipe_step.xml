@@ -1,18 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    tools:context=".RecipeStepFragment"
-    android:padding="@dimen/medium_spacing">
+    tools:context=".RecipeStepFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
-
 
         <com.google.android.exoplayer2.ui.PlayerView
             android:id="@+id/step_video_view"
@@ -21,31 +19,7 @@
 
         </com.google.android.exoplayer2.ui.PlayerView>
 
-        <TextView
-            android:id="@+id/tv_step_id"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="@dimen/medium_spacing"
-            android:paddingBottom="@dimen/medium_spacing"
-            android:paddingVertical="@dimen/medium_spacing"
-            android:text="Step #1"
-            android:textAppearance="@style/TextAppearance.AppCompat.Large" />
-
-        <TextView
-            android:id="@+id/tv_step_desc"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:lineSpacingExtra="8sp"
-            android:paddingTop="@dimen/medium_spacing"
-            android:paddingBottom="@dimen/medium_spacing"
-            android:paddingVertical="@dimen/medium_spacing"
-            android:text="@string/dummy_large_text" />
-
-        <Button
-            android:id="@+id/bt_next_step"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Next Step"/>
+        <include layout="@layout/step_item_detail" />
 
     </LinearLayout>
 

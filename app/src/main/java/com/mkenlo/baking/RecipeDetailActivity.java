@@ -1,18 +1,15 @@
 package com.mkenlo.baking;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.mkenlo.baking.model.DataUtils;
@@ -29,11 +26,11 @@ public class RecipeDetailActivity extends AppCompatActivity
         implements RecipeStepFragment.OnFragmentInteractionListener {
 
 
-    public static String ARG_RECIPE_ID = "recipe id";
-    public static String ARG_RECIPE_NAME = "recipe name";
-
+    public static String ARG_RECIPE_ID = "recipe_id";
+    private int recipeID;
     private Recipe mRecipe;
     private boolean mTwoPane;
+    private boolean mIsLastStep;
 
 
     @Override
@@ -41,16 +38,13 @@ public class RecipeDetailActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe_detail);
 
+        mIsLastStep = false;
 
-        // Show the Up button in the action bar.
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(true);
+        if(savedInstanceState!=null){
+            recipeID = (int) savedInstanceState.getLong(ARG_RECIPE_ID);
         }
+        else recipeID = (int) getIntent().getLongExtra(ARG_RECIPE_ID, 1);
 
-
-
-        int recipeID = (int) getIntent().getLongExtra(ARG_RECIPE_ID, 0);
         mRecipe = new DataUtils(this).getData().get(recipeID-1);
 
         if(findViewById(R.id.frag_recipe_step_container)!=null){
@@ -63,6 +57,7 @@ public class RecipeDetailActivity extends AppCompatActivity
 
                arguments.putParcelable(RecipeStepFragment.ARG_STEP_ITEM,
                         mRecipe.getSteps().get(0));
+               arguments.putBoolean("last_step_item", mIsLastStep);
 
 
                 RecipeStepFragment fragment = new RecipeStepFragment();
@@ -74,13 +69,13 @@ public class RecipeDetailActivity extends AppCompatActivity
 
         }else{ mTwoPane = false;}
 
-
-
-
-        // Rename UI title
-
-        actionBar.setTitle(mRecipe.getName());
-
+        // Show the Up button in the action bar.
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            // Rename UI title
+            actionBar.setTitle(mRecipe.getName());
+        }
 
         ((TextView) findViewById(R.id.tv_recipe_name)).setText(mRecipe.getName());
         RecyclerView ingredientList = findViewById(R.id.rv_ingredient_list);
@@ -91,26 +86,25 @@ public class RecipeDetailActivity extends AppCompatActivity
         stepList.setLayoutManager(new LinearLayoutManager(this));
         stepList.setAdapter(new StepListAdapter(mRecipe.getSteps()));
 
-
-
     }
 
     private void setupFragmentUI(RecipeSteps item){
 
         if (mTwoPane) {
             Bundle arguments = new Bundle();
-            arguments.putString(ARG_RECIPE_NAME, mRecipe.getName());
+            arguments.putLong(ARG_RECIPE_ID, mRecipe.getID());
             arguments.putParcelable(RecipeStepActivity.ARG_STEP_ITEM, item);
 
             RecipeStepFragment fragment = new RecipeStepFragment();
             fragment.setArguments(arguments);
+            arguments.putBoolean("ARG_LAST_STEP", mIsLastStep);
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.frag_recipe_step_container, fragment)
                     .commit();
         } else {
             Intent intent = new Intent(this, RecipeStepActivity.class);
             intent.putExtra(RecipeStepActivity.ARG_STEP_ITEM, item);
-            intent.putExtra(ARG_RECIPE_NAME, mRecipe.getName());
+            intent.putExtra(ARG_RECIPE_ID, mRecipe.getID());
             startActivity(intent);
         }
     }
@@ -122,13 +116,13 @@ public class RecipeDetailActivity extends AppCompatActivity
 
     }
 
-
     @Override
-    public void onButtonNextStepSelected(long position) {
+    public void onButtonNextStepClicked(long position) {
         if((int) position < mRecipe.getSteps().size()){
             RecipeSteps nextStep = mRecipe.getSteps().get((int)position);
             setupFragmentUI(nextStep);
         }
+        else mIsLastStep = true;
 
     }
 
@@ -226,5 +220,19 @@ public class RecipeDetailActivity extends AppCompatActivity
                 ButterKnife.bind(this, itemView);
             }
         }
+    }
+
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putLong(ARG_RECIPE_ID, mRecipe.getID());
+        super.onSaveInstanceState(outState);
+
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        recipeID = (int) savedInstanceState.getLong(ARG_RECIPE_ID);
     }
 }

@@ -7,5 +7,5 @@
     <dimen name="medium_spacing">16dp</dimen>
     <dimen name="large_spacing">24dp</dimen>
 
-    <dimen name="video_height">200dp</dimen>
+    <dimen name="video_height">300dp</dimen>
 </resources>

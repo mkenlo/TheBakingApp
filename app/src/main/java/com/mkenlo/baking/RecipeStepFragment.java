@@ -1,5 +1,6 @@
 package com.mkenlo.baking;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
@@ -10,8 +11,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.google.android.exoplayer2.DefaultLoadControl;
-import com.google.android.exoplayer2.DefaultRenderersFactory;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
@@ -28,17 +27,18 @@ import butterknife.ButterKnife;
 
 public class RecipeStepFragment extends Fragment {
 
-    public static String ARG_STEP_ITEM = "recipe step object";
+    public static String ARG_STEP_ITEM = "recipe_step_item";
+    public static String ARG_LAST_STEP = "last_step_item";
+
 
     private RecipeSteps mStep;
+    private boolean mIsLastStep;
     private OnFragmentInteractionListener mListener;
     private SimpleExoPlayer mExoPlayer;
-    private boolean mPlayWhenReady = false;
+    private boolean mPlayWhenReady = true;
     private long mPlayBackPosition = 0;
     private int mCurrentWindow = 0;
-    @BindView(R.id.tv_step_id) TextView mStepIdTextView;
-    @BindView(R.id.tv_step_desc) TextView mStepDescTextView;
-    @BindView(R.id.bt_next_step) Button mNextStepButton;
+
     @BindView(R.id.step_video_view) PlayerView mStepPlayerView;
 
 
@@ -51,12 +51,21 @@ public class RecipeStepFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mStep = getArguments().getParcelable(ARG_STEP_ITEM);
+            mIsLastStep = getArguments().getBoolean(ARG_LAST_STEP);
         }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+       /* if(mStep.getVideoURL()!=null)
+            initializePlayer(Uri.parse(mStep.getVideoURL()));*/
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        hideSystemUi();
     }
 
     @Override
@@ -66,7 +75,6 @@ public class RecipeStepFragment extends Fragment {
             releasePlayer();
         }
     }
-
 
     @Override
     public void onStop() {
@@ -84,33 +92,42 @@ public class RecipeStepFragment extends Fragment {
         ButterKnife.bind(this, rootView);
 
         if(mStep!=null){
-            mStepIdTextView.setText("Step #" + mStep.getID());
-            mStepDescTextView.setText(mStep.getDescription());
-            mNextStepButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mListener.onButtonNextStepSelected(mStep.getID()+1);
+
+            /* This layout only exists in Portrait Mode because the video takes up fullscreen
+                on Landscape Mode on Phone
+            */
+            if(rootView.findViewById(R.id.layout_step_detail)!=null){
+
+                ((TextView)rootView.findViewById(R.id.tv_step_id)).setText("Step #" + mStep.getID());
+                ((TextView)rootView.findViewById(R.id.tv_step_desc)).setText(mStep.getDescription());
+
+                Button mNextStepButton = rootView.findViewById(R.id.bt_next_step);
+                mNextStepButton.setEnabled(!mIsLastStep);
+                if(mIsLastStep){
+                    mNextStepButton.setBackgroundResource(R.color.colorPrimaryLight);
+                    mNextStepButton.setText("No more steps");
                 }
-            });
+                else{
+                    mNextStepButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            mListener.onButtonNextStepClicked(mStep.getID()+1);
+                        }
+                    });}
+            }
+
+
         }
-
-
-        initializePlayer(Uri.parse(mStep.getVideoURL()));
 
         return rootView;
     }
 
-
     private void initializePlayer(Uri videoUri){
 
-        mExoPlayer = ExoPlayerFactory.newSimpleInstance(
-                new DefaultRenderersFactory(getContext()),
-                new DefaultTrackSelector(),
-                new DefaultLoadControl());
+        mExoPlayer = ExoPlayerFactory.newSimpleInstance(getContext(),
+                new DefaultTrackSelector());
 
         mStepPlayerView.setPlayer(mExoPlayer);
-
-
         mExoPlayer.setPlayWhenReady(mPlayWhenReady);
         mExoPlayer.seekTo(mPlayBackPosition);
         mExoPlayer.prepare(buildMediaSource(videoUri));
@@ -121,15 +138,18 @@ public class RecipeStepFragment extends Fragment {
             mPlayBackPosition = mExoPlayer.getCurrentPosition();
             mCurrentWindow = mExoPlayer.getCurrentWindowIndex();
             mPlayWhenReady = mExoPlayer.getPlayWhenReady();
+            mStepPlayerView.setPlayer(null);
             mExoPlayer.release();
             mExoPlayer = null;
         }
     }
+
     private MediaSource buildMediaSource(Uri videoUri){
-        //Need to test if the URL is null or not.
+
         return new ExtractorMediaSource.Factory(
-                    new DefaultHttpDataSourceFactory(Util.getUserAgent(getContext(), "TheBakingApp"))).
-                createMediaSource(videoUri);
+                new DefaultHttpDataSourceFactory(Util.getUserAgent(getContext(), "TheBakingApp"))).
+            createMediaSource(videoUri);
+
 
     }
 
@@ -152,8 +172,21 @@ public class RecipeStepFragment extends Fragment {
 
 
     public interface OnFragmentInteractionListener {
-       void onButtonNextStepSelected(long nextPosition);
+       void onButtonNextStepClicked(long nextPosition);
     }
+
+
+    @SuppressLint("InlinedApi")
+    private void hideSystemUi() {
+        mStepPlayerView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE
+                | View.SYSTEM_UI_FLAG_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+    }
+
+
 
 
 }

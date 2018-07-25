@@ -1,17 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
+<android.support.v4.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="@dimen/medium_spacing">
-
 
         <TextView
             android:id="@+id/tv_recipe_name"
@@ -20,14 +19,17 @@
             android:layout_marginBottom="@dimen/medium_spacing"
             android:layout_marginTop="@dimen/medium_spacing"
             android:text="@string/hello_blank_fragment"
-            android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            android:textColor="@color/colorAccent"/>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Ingredients"
+            android:text="@string/recipe_ingredients"
             android:layout_marginTop="@dimen/medium_spacing"
-            android:layout_marginBottom="@dimen/medium_spacing"/>
+            android:layout_marginBottom="@dimen/medium_spacing"
+            android:textSize="18sp"
+            android:textStyle="bold"/>
 
         <android.support.v7.widget.RecyclerView
             android:id = "@+id/rv_ingredient_list"
@@ -38,9 +40,11 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Directions"
+            android:layout_marginBottom="@dimen/medium_spacing"
             android:layout_marginTop="@dimen/medium_spacing"
-            android:layout_marginBottom="@dimen/medium_spacing"/>
+            android:text="@string/recipe_direction"
+            android:textSize="18sp"
+            android:textStyle="bold" />
 
         <android.support.v7.widget.RecyclerView
             android:id = "@+id/rv_step_list"
@@ -50,4 +54,4 @@
     </LinearLayout>
 
 
-</ScrollView>
+</android.support.v4.widget.NestedScrollView>

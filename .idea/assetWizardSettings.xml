@@ -18,7 +18,7 @@
                                 <PersistentState>
                                   <option name="values">
                                     <map>
-                                      <entry key="url" value="jar:file:/C:/Program%20Files/Android/Android%20Studio/plugins/android/lib/android.jar!/images/material_design_icons/toggle/ic_radio_button_unchecked_black_24dp.xml" />
+                                      <entry key="url" value="jar:file:/C:/Program%20Files/Android/Android%20Studio/plugins/android/lib/android.jar!/images/material_design_icons/navigation/ic_more_vert_black_24dp.xml" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -29,8 +29,8 @@
                         <option name="values">
                           <map>
                             <entry key="assetSourceType" value="FILE" />
-                            <entry key="outputName" value="ic_piece_of_cake" />
-                            <entry key="sourceFile" value="C:\Users\Melanie Lontsi\Downloads\piece-of-cake.svg" />
+                            <entry key="outputName" value="ic_recipe" />
+                            <entry key="sourceFile" value="C:\Users\Melanie Lontsi\Downloads\recipe.svg" />
                           </map>
                         </option>
                       </PersistentState>

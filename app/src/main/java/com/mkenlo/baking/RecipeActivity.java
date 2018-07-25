@@ -51,8 +51,6 @@ public class RecipeActivity extends AppCompatActivity {
 
                 Recipe item = (Recipe) view.getTag();
                 Intent intent = new Intent(view.getContext(), RecipeDetailActivity.class);
-
-
                 intent.putExtra(RecipeDetailActivity.ARG_RECIPE_ID, item.getID() );
                 startActivity(intent);
             }

@@ -28,12 +28,12 @@ public class RecipeStepActivity extends AppCompatActivity  implements RecipeStep
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe_step);
 
-        int recipeID = (int) getIntent().getLongExtra(ARG_RECIPE_ID, 1);
+        int recipeID = getIntent().getIntExtra(ARG_RECIPE_ID, 1);
 
         RecipeSteps stepItem;
 
         if(savedInstanceState!=null){
-            recipeID = (int) savedInstanceState.getLong(ARG_RECIPE_ID);
+            recipeID = savedInstanceState.getInt(ARG_RECIPE_ID);
             stepItem = savedInstanceState.getParcelable(ARG_STEP_ITEM);
             setupFragmentUI(stepItem, ARG_FRAG_TRANSACTION_REPLACE);
         }
@@ -77,7 +77,7 @@ public class RecipeStepActivity extends AppCompatActivity  implements RecipeStep
     }
 
     @Override
-    public void onButtonNextStepClicked(long nextPosition) {
+    public void onButtonNextStepClicked(int nextPosition) {
         if((int)nextPosition < mRecipe.getSteps().size()){
             RecipeSteps nextStep = mRecipe.getSteps().get((int)nextPosition);
             setupFragmentUI(nextStep, ARG_FRAG_TRANSACTION_REPLACE);
@@ -101,7 +101,7 @@ public class RecipeStepActivity extends AppCompatActivity  implements RecipeStep
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        outState.putLong(ARG_RECIPE_ID, mRecipe.getID());
+        outState.putInt(ARG_RECIPE_ID, mRecipe.getID());
         outState.putParcelable(ARG_STEP_ITEM, getIntent().getParcelableExtra(ARG_STEP_ITEM));
         super.onSaveInstanceState(outState);
     }

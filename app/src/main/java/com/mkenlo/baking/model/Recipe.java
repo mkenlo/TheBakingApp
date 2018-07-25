@@ -4,7 +4,7 @@ import java.util.List;
 
 public class Recipe {
 
-    long   id;
+    int   id;
     int    servings;
     String name;
     String image;
@@ -15,11 +15,11 @@ public class Recipe {
     public Recipe() {
     }
 
-    public long getID() {
+    public int getID() {
         return id;
     }
 
-    public void setID(long ID) {
+    public void setID(int ID) {
         this.id = ID;
     }
 
@@ -61,5 +61,10 @@ public class Recipe {
 
     public void setSteps(List<RecipeSteps> steps) {
         this.steps = steps;
+    }
+
+    @Override
+    public String toString() {
+        return id+" - "+name;
     }
 }

@@ -58,8 +58,8 @@ public class RecipeStepFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-       /* if(mStep.getVideoURL()!=null)
-            initializePlayer(Uri.parse(mStep.getVideoURL()));*/
+        if(mStep.getVideoURL()!=null)
+            initializePlayer(Uri.parse(mStep.getVideoURL()));
     }
 
     @Override
@@ -172,7 +172,7 @@ public class RecipeStepFragment extends Fragment {
 
 
     public interface OnFragmentInteractionListener {
-       void onButtonNextStepClicked(long nextPosition);
+       void onButtonNextStepClicked(int nextPosition);
     }
 
 

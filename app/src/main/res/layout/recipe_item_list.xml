@@ -6,7 +6,7 @@
     android:layout_height="180dp"
     android:id="@+id/cv_recipe_card"
     tools:context=".RecipeActivity"
-    android:layout_margin="16dp"
+    android:layout_margin="@dimen/card_margin"
     android:padding="@dimen/medium_spacing">
 
 

@@ -40,24 +40,22 @@ public class RecipeDetailActivity extends AppCompatActivity
 
         mIsLastStep = false;
 
-        if(savedInstanceState!=null){
-            recipeID = (int) savedInstanceState.getLong(ARG_RECIPE_ID);
-        }
-        else recipeID = (int) getIntent().getLongExtra(ARG_RECIPE_ID, 1);
+        if (savedInstanceState != null) {
+            recipeID = savedInstanceState.getInt(ARG_RECIPE_ID);
+        } else recipeID = getIntent().getIntExtra(ARG_RECIPE_ID, 1);
 
-        mRecipe = new DataUtils(this).getData().get(recipeID-1);
+        mRecipe = new DataUtils(this).getData().get(recipeID - 1);
 
-        if(findViewById(R.id.frag_recipe_step_container)!=null){
+        if (findViewById(R.id.frag_recipe_step_container) != null) {
             mTwoPane = true;
             if (savedInstanceState == null) {
                 // Create the detail fragment and add it to the activity
                 // using a fragment transaction.
 
                 Bundle arguments = new Bundle();
-
-               arguments.putParcelable(RecipeStepFragment.ARG_STEP_ITEM,
+                arguments.putParcelable(RecipeStepFragment.ARG_STEP_ITEM,
                         mRecipe.getSteps().get(0));
-               arguments.putBoolean("last_step_item", mIsLastStep);
+                arguments.putBoolean("last_step_item", mIsLastStep);
 
 
                 RecipeStepFragment fragment = new RecipeStepFragment();
@@ -67,7 +65,9 @@ public class RecipeDetailActivity extends AppCompatActivity
                         .commit();
             }
 
-        }else{ mTwoPane = false;}
+        } else {
+            mTwoPane = false;
+        }
 
         // Show the Up button in the action bar.
         ActionBar actionBar = getSupportActionBar();
@@ -88,16 +88,16 @@ public class RecipeDetailActivity extends AppCompatActivity
 
     }
 
-    private void setupFragmentUI(RecipeSteps item){
+    private void setupFragmentUI(RecipeSteps item) {
 
         if (mTwoPane) {
             Bundle arguments = new Bundle();
-            arguments.putLong(ARG_RECIPE_ID, mRecipe.getID());
+            arguments.putInt(ARG_RECIPE_ID, mRecipe.getID());
             arguments.putParcelable(RecipeStepActivity.ARG_STEP_ITEM, item);
 
             RecipeStepFragment fragment = new RecipeStepFragment();
             fragment.setArguments(arguments);
-            arguments.putBoolean("ARG_LAST_STEP", mIsLastStep);
+            arguments.putBoolean("last_step_item", mIsLastStep);
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.frag_recipe_step_container, fragment)
                     .commit();
@@ -109,7 +109,7 @@ public class RecipeDetailActivity extends AppCompatActivity
         }
     }
 
-    public void onRecipeStepSelected(View view){
+    public void onRecipeStepSelected(View view) {
 
         RecipeSteps item = (RecipeSteps) view.getTag();
         setupFragmentUI(item);
@@ -117,12 +117,11 @@ public class RecipeDetailActivity extends AppCompatActivity
     }
 
     @Override
-    public void onButtonNextStepClicked(long position) {
-        if((int) position < mRecipe.getSteps().size()){
-            RecipeSteps nextStep = mRecipe.getSteps().get((int)position);
+    public void onButtonNextStepClicked(int position) {
+        if (position < mRecipe.getSteps().size()) {
+            RecipeSteps nextStep = mRecipe.getSteps().get(position);
             setupFragmentUI(nextStep);
-        }
-        else mIsLastStep = true;
+        } else mIsLastStep = true;
 
     }
 
@@ -148,10 +147,8 @@ public class RecipeDetailActivity extends AppCompatActivity
         @Override
         public void onBindViewHolder(@NonNull IngredientListAdapter.ViewHolder holder,
                                      int position) {
-            String ingredient = mIngredients.get(position).getQuantity() + " "+
-                    mIngredients.get(position).getMeasure() + " " +
-                    mIngredients.get(position).getIngredient();
-            holder.mIngredientName.setText(ingredient);
+            Ingredient ingredient = mIngredients.get(position);
+            holder.mIngredientName.setText(ingredient.toString());
 
         }
 
@@ -161,7 +158,8 @@ public class RecipeDetailActivity extends AppCompatActivity
         }
 
         class ViewHolder extends RecyclerView.ViewHolder {
-            @BindView(R.id.tv_ingredient) TextView mIngredientName;
+            @BindView(R.id.tv_ingredient)
+            TextView mIngredientName;
 
             public ViewHolder(View itemView) {
                 super(itemView);
@@ -198,9 +196,7 @@ public class RecipeDetailActivity extends AppCompatActivity
         @Override
         public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
-            holder.mStepId.setText(String.valueOf(mSteps.get(position).getID()));
-            holder.mStepName.setText(mSteps.get(position).getShortDescription());
-
+            holder.mStepName.setText(mSteps.get(position).toString());
             holder.itemView.setTag(mSteps.get(position));
             holder.itemView.setOnClickListener(mOnClickListener);
 
@@ -212,8 +208,9 @@ public class RecipeDetailActivity extends AppCompatActivity
         }
 
         class ViewHolder extends RecyclerView.ViewHolder {
-            @BindView(R.id.tv_step_id) TextView mStepId;
-            @BindView(R.id.tv_step_name) TextView mStepName;
+
+            @BindView(R.id.tv_step_name)
+            TextView mStepName;
 
             public ViewHolder(View itemView) {
                 super(itemView);

@@ -5,7 +5,7 @@ import android.os.Parcelable;
 
 public class RecipeSteps implements Parcelable {
 
-    long id;
+    int id;
     String shortDescription;
     String description;
     String videoURL;
@@ -14,7 +14,7 @@ public class RecipeSteps implements Parcelable {
     public RecipeSteps() {
     }
 
-    public RecipeSteps(long ID, String shortDescription, String description, String videoURL, String thumbsnailURL) {
+    public RecipeSteps(int ID, String shortDescription, String description, String videoURL, String thumbsnailURL) {
         this.id = ID;
         this.shortDescription = shortDescription;
         this.description = description;
@@ -22,11 +22,11 @@ public class RecipeSteps implements Parcelable {
         this.thumbnailURL = thumbsnailURL;
     }
 
-    public long getID() {
+    public int getID() {
         return id;
     }
 
-    public void setID(long ID) {
+    public void setID(int ID) {
         this.id = ID;
     }
 
@@ -69,13 +69,12 @@ public class RecipeSteps implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeLong(id);
+        dest.writeInt(id);
         dest.writeString(shortDescription);
         dest.writeString(description);
         dest.writeString(videoURL);
         dest.writeString(thumbnailURL);
     }
-
 
 
     public static final Parcelable.Creator<RecipeSteps> CREATOR
@@ -90,11 +89,16 @@ public class RecipeSteps implements Parcelable {
     };
 
     private RecipeSteps(Parcel in) {
-        id = in.readLong();
+        id = in.readInt();
         this.shortDescription = in.readString();
         this.description = in.readString();
         this.videoURL = in.readString();
         this.thumbnailURL = in.readString();
 
+    }
+
+    @Override
+    public String toString() {
+        return id +".   "+ shortDescription;
     }
 }

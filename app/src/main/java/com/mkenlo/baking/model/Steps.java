@@ -3,7 +3,7 @@ package com.mkenlo.baking.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class RecipeSteps implements Parcelable {
+public class Steps implements Parcelable {
 
     int id;
     String shortDescription;
@@ -11,10 +11,10 @@ public class RecipeSteps implements Parcelable {
     String videoURL;
     String thumbnailURL;
 
-    public RecipeSteps() {
+    public Steps() {
     }
 
-    public RecipeSteps(int ID, String shortDescription, String description, String videoURL, String thumbsnailURL) {
+    public Steps(int ID, String shortDescription, String description, String videoURL, String thumbsnailURL) {
         this.id = ID;
         this.shortDescription = shortDescription;
         this.description = description;
@@ -77,18 +77,18 @@ public class RecipeSteps implements Parcelable {
     }
 
 
-    public static final Parcelable.Creator<RecipeSteps> CREATOR
-            = new Parcelable.Creator<RecipeSteps>() {
-        public RecipeSteps createFromParcel(Parcel in) {
-            return new RecipeSteps(in);
+    public static final Parcelable.Creator<Steps> CREATOR
+            = new Parcelable.Creator<Steps>() {
+        public Steps createFromParcel(Parcel in) {
+            return new Steps(in);
         }
 
-        public RecipeSteps[] newArray(int size) {
-            return new RecipeSteps[size];
+        public Steps[] newArray(int size) {
+            return new Steps[size];
         }
     };
 
-    private RecipeSteps(Parcel in) {
+    private Steps(Parcel in) {
         id = in.readInt();
         this.shortDescription = in.readString();
         this.description = in.readString();

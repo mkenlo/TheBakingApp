@@ -1,15 +1,19 @@
 package com.mkenlo.baking.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.List;
 
-public class Recipe {
 
-    int   id;
+public class Recipe implements Parcelable {
+
+    int    id;
     int    servings;
     String name;
     String image;
     List<Ingredient>   ingredients;
-    List<RecipeSteps>   steps;
+    List<Steps>   steps;
 
 
     public Recipe() {
@@ -55,11 +59,11 @@ public class Recipe {
         this.ingredients = ingredients;
     }
 
-    public List<RecipeSteps> getSteps() {
+    public List<Steps> getSteps() {
         return steps;
     }
 
-    public void setSteps(List<RecipeSteps> steps) {
+    public void setSteps(List<Steps> steps) {
         this.steps = steps;
     }
 
@@ -67,4 +71,37 @@ public class Recipe {
     public String toString() {
         return id+" - "+name;
     }
+
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(id);
+        dest.writeString(name);
+        dest.writeString(image);
+        dest.writeInt(servings);
+        dest.writeList(steps);
+        dest.writeList(ingredients);
+    }
+
+    private Recipe(Parcel in){
+        this.id = in.readInt();
+        this.name = in.readString();
+        this.image = in.readString();
+        this.steps = in.createTypedArrayList(Steps.CREATOR);
+        this.ingredients = in.createTypedArrayList(Ingredient.CREATOR);
+    }
+
+    public static final Parcelable.Creator<Recipe> CREATOR
+            = new Parcelable.Creator<Recipe>() {
+        public Recipe createFromParcel(Parcel in) { return new Recipe(in); }
+
+        public Recipe[] newArray(int size) {
+            return new Recipe[size];
+        }
+    };
 }

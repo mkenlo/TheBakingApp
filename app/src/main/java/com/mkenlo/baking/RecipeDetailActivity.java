@@ -15,7 +15,8 @@ import android.widget.TextView;
 import com.mkenlo.baking.model.DataUtils;
 import com.mkenlo.baking.model.Ingredient;
 import com.mkenlo.baking.model.Recipe;
-import com.mkenlo.baking.model.RecipeSteps;
+import com.mkenlo.baking.model.Steps;
+import com.mkenlo.baking.utils.Constants;
 
 import java.util.List;
 
@@ -40,11 +41,12 @@ public class RecipeDetailActivity extends AppCompatActivity
 
         mIsLastStep = false;
 
-        if (savedInstanceState != null) {
-            recipeID = savedInstanceState.getInt(ARG_RECIPE_ID);
-        } else recipeID = getIntent().getIntExtra(ARG_RECIPE_ID, 1);
+        mRecipe = getIntent().getParcelableExtra(Constants.KEY_ITEM_RECIPE);
 
-        mRecipe = new DataUtils(this).getData().get(recipeID - 1);
+        if (savedInstanceState != null) {
+            mRecipe = savedInstanceState.getParcelable(Constants.KEY_ITEM_RECIPE);
+        }
+
 
         if (findViewById(R.id.frag_recipe_step_container) != null) {
             mTwoPane = true;
@@ -53,10 +55,8 @@ public class RecipeDetailActivity extends AppCompatActivity
                 // using a fragment transaction.
 
                 Bundle arguments = new Bundle();
-                arguments.putParcelable(RecipeStepFragment.ARG_STEP_ITEM,
-                        mRecipe.getSteps().get(0));
-                arguments.putBoolean("last_step_item", mIsLastStep);
-
+                arguments.putParcelable(Constants.KEY_ITEM_STEP, mRecipe.getSteps().get(0));
+                arguments.putBoolean(Constants.KEY_ITEM_LAST_STEP, mIsLastStep);
 
                 RecipeStepFragment fragment = new RecipeStepFragment();
                 fragment.setArguments(arguments);
@@ -76,7 +76,8 @@ public class RecipeDetailActivity extends AppCompatActivity
             // Rename UI title
             actionBar.setTitle(mRecipe.getName());
         }
-
+        mRecipe.getSteps();
+        mRecipe.getIngredients();
         ((TextView) findViewById(R.id.tv_recipe_name)).setText(mRecipe.getName());
         RecyclerView ingredientList = findViewById(R.id.rv_ingredient_list);
         ingredientList.setLayoutManager(new LinearLayoutManager(this));
@@ -88,30 +89,30 @@ public class RecipeDetailActivity extends AppCompatActivity
 
     }
 
-    private void setupFragmentUI(RecipeSteps item) {
+    private void setupFragmentUI(Steps item) {
 
         if (mTwoPane) {
             Bundle arguments = new Bundle();
-            arguments.putInt(ARG_RECIPE_ID, mRecipe.getID());
-            arguments.putParcelable(RecipeStepActivity.ARG_STEP_ITEM, item);
+            arguments.putParcelable(Constants.KEY_ITEM_RECIPE, mRecipe);
+            arguments.putParcelable(Constants.KEY_ITEM_STEP, item);
 
             RecipeStepFragment fragment = new RecipeStepFragment();
             fragment.setArguments(arguments);
-            arguments.putBoolean("last_step_item", mIsLastStep);
+            arguments.putBoolean(Constants.KEY_ITEM_LAST_STEP, mIsLastStep);
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.frag_recipe_step_container, fragment)
                     .commit();
         } else {
             Intent intent = new Intent(this, RecipeStepActivity.class);
-            intent.putExtra(RecipeStepActivity.ARG_STEP_ITEM, item);
-            intent.putExtra(ARG_RECIPE_ID, mRecipe.getID());
+            intent.putExtra(Constants.KEY_ITEM_STEP, item);
+            intent.putExtra(Constants.KEY_ITEM_RECIPE, mRecipe);
             startActivity(intent);
         }
     }
 
     public void onRecipeStepSelected(View view) {
 
-        RecipeSteps item = (RecipeSteps) view.getTag();
+        Steps item = (Steps) view.getTag();
         setupFragmentUI(item);
 
     }
@@ -119,7 +120,7 @@ public class RecipeDetailActivity extends AppCompatActivity
     @Override
     public void onButtonNextStepClicked(int position) {
         if (position < mRecipe.getSteps().size()) {
-            RecipeSteps nextStep = mRecipe.getSteps().get(position);
+            Steps nextStep = mRecipe.getSteps().get(position);
             setupFragmentUI(nextStep);
         } else mIsLastStep = true;
 
@@ -171,7 +172,7 @@ public class RecipeDetailActivity extends AppCompatActivity
 
     public class StepListAdapter extends RecyclerView.Adapter<StepListAdapter.ViewHolder> {
 
-        private List<RecipeSteps> mSteps;
+        private List<Steps> mSteps;
         private View.OnClickListener mOnClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -222,7 +223,7 @@ public class RecipeDetailActivity extends AppCompatActivity
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        outState.putLong(ARG_RECIPE_ID, mRecipe.getID());
+        outState.putParcelable(Constants.KEY_ITEM_RECIPE, mRecipe);
         super.onSaveInstanceState(outState);
 
     }
@@ -230,6 +231,6 @@ public class RecipeDetailActivity extends AppCompatActivity
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        recipeID = (int) savedInstanceState.getLong(ARG_RECIPE_ID);
+        mRecipe = savedInstanceState.getParcelable(Constants.KEY_ITEM_RECIPE);
     }
 }

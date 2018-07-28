@@ -19,7 +19,8 @@ import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
-import com.mkenlo.baking.model.RecipeSteps;
+import com.mkenlo.baking.model.Steps;
+import com.mkenlo.baking.utils.Constants;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -31,7 +32,7 @@ public class RecipeStepFragment extends Fragment {
     public static String ARG_LAST_STEP = "last_step_item";
 
 
-    private RecipeSteps mStep;
+    private Steps mStep;
     private boolean mIsLastStep;
     private OnFragmentInteractionListener mListener;
     private SimpleExoPlayer mExoPlayer;
@@ -50,21 +51,27 @@ public class RecipeStepFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mStep = getArguments().getParcelable(ARG_STEP_ITEM);
-            mIsLastStep = getArguments().getBoolean(ARG_LAST_STEP);
+            mStep = getArguments().getParcelable(Constants.KEY_ITEM_STEP);
+            mIsLastStep = getArguments().getBoolean(Constants.KEY_ITEM_LAST_STEP);
         }
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        if(mStep.getVideoURL()!=null)
-            initializePlayer(Uri.parse(mStep.getVideoURL()));
+        if (Util.SDK_INT > 23) {
+            if(mStep.getVideoURL()!=null)
+                initializePlayer(Uri.parse(mStep.getVideoURL()));
+        }
+
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        if ((Util.SDK_INT <= 23 || mExoPlayer == null)) {
+            initializePlayer(Uri.parse(mStep.getVideoURL()));
+        }
         hideSystemUi();
     }
 
@@ -185,8 +192,6 @@ public class RecipeStepFragment extends Fragment {
                 | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                 | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
     }
-
-
 
 
 }

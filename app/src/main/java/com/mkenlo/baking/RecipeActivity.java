@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import com.mkenlo.baking.model.DataUtils;
 import com.mkenlo.baking.model.Recipe;
+import com.mkenlo.baking.utils.Constants;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -35,7 +36,6 @@ public class RecipeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_recipe);
 
         ButterKnife.bind(this);
-
         mLayoutManager = new GridLayoutManager(this, calculateBestColumnCount());
         mRecipeListView.setLayoutManager(mLayoutManager);
         mRecipeListView.setAdapter(new RecipeListAdapter(new DataUtils(this).getData()));
@@ -51,7 +51,7 @@ public class RecipeActivity extends AppCompatActivity {
 
                 Recipe item = (Recipe) view.getTag();
                 Intent intent = new Intent(view.getContext(), RecipeDetailActivity.class);
-                intent.putExtra(RecipeDetailActivity.ARG_RECIPE_ID, item.getID() );
+                intent.putExtra(Constants.KEY_ITEM_RECIPE, item);
                 startActivity(intent);
             }
 

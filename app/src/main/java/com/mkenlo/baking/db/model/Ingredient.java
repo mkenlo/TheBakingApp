@@ -1,23 +1,33 @@
-package com.mkenlo.baking.model;
+package com.mkenlo.baking.db.model;
 
 
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.ForeignKey;
+import android.arch.persistence.room.Index;
+import android.arch.persistence.room.PrimaryKey;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.Expose;
 
+@Entity(foreignKeys = @ForeignKey(entity = Recipe.class,
+        parentColumns = "id",
+        childColumns = "recipeId"), indices = {@Index(value = "recipeId")})
 public class Ingredient implements Parcelable {
 
-    double quantity;
-    String measure;
-    String ingredient;
+    @Expose
+    public double quantity;
+    @Expose
+    public String measure;
+    @Expose
+    public String ingredient;
+
+    @PrimaryKey(autoGenerate = true)
+    public int id;
+
+    int recipeId;
 
     public Ingredient() {
-    }
-
-    public Ingredient(double quantity, String measure, String ingredient) {
-        this.quantity = quantity;
-        this.measure = measure;
-        this.ingredient = ingredient;
     }
 
     public double getQuantity() {
@@ -42,6 +52,14 @@ public class Ingredient implements Parcelable {
 
     public void setIngredient(String ingredient) {
         this.ingredient = ingredient;
+    }
+
+    public void setRecipeId(int recipeId) {
+        this.recipeId = recipeId;
+    }
+
+    public int getRecipeId() {
+        return recipeId;
     }
 
     @Override

@@ -14,36 +14,44 @@ import android.widget.RemoteViews;
 import android.widget.TextView;
 
 import com.mkenlo.baking.R;
-import com.mkenlo.baking.model.DataUtils;
-import com.mkenlo.baking.model.Recipe;
-
+import com.mkenlo.baking.db.AppExecutors;
+import com.mkenlo.baking.db.BasicApp;
+import com.mkenlo.baking.db.DataRepository;
+import com.mkenlo.baking.db.model.Recipe;
 import java.util.List;
 
-/**
- * The configuration screen for the {@link BakingAppWidgetProvider BakingAppWidgetProvider} AppWidget.
- */
-public class BakingAppWidgetConfigureActivity extends Activity {
 
-    private static final String PREFS_NAME = "com.mkenlo.baking.widget.BakingAppWidgetProvider";
+/**
+ * The configuration screen for the {@link WidgetProvider WidgetProvider} AppWidget.
+ */
+public class WidgetConfigureActivity extends Activity {
+
+    private static final String PREFS_NAME = "com.mkenlo.baking.widget.WidgetProvider";
     private static final String PREF_PREFIX_KEY = "appwidget_";
     private ListView mRecipeList;
     int mAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
 
+    SimpleListAdapter mAdapter;
 
-    public BakingAppWidgetConfigureActivity() {
+
+    public WidgetConfigureActivity() {
         super();
     }
 
 
-    static void saveRecipePref(Context context, int appWidgetId, int recipeId){
+    static void saveRecipePref(Context context, int appWidgetId, Recipe recipe){
         SharedPreferences.Editor prefs = context.getSharedPreferences(PREFS_NAME, 0).edit();
-        prefs.putInt(PREF_PREFIX_KEY + appWidgetId, recipeId);
+        prefs.putInt(PREF_PREFIX_KEY + appWidgetId, recipe.getID());
+        prefs.putString(PREF_PREFIX_KEY +"_VALUE_"+ appWidgetId, recipe.getName());
         prefs.apply();
     }
 
-    static int loadRecipePref(Context context, int appWidgetId) {
+    static Recipe loadRecipePref(Context context, int appWidgetId) {
         SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, 0);
-        return prefs.getInt(PREF_PREFIX_KEY + appWidgetId, 1);
+        Recipe  recipe = new Recipe();
+        recipe.setID(prefs.getInt(PREF_PREFIX_KEY + appWidgetId, 0));
+        recipe.setName(prefs.getString(PREF_PREFIX_KEY+"_VALUE_" + appWidgetId,"Recipe"));
+        return recipe;
     }
 
     static void deleteRecipePref(Context context, int appWidgetId) {
@@ -76,26 +84,35 @@ public class BakingAppWidgetConfigureActivity extends Activity {
             return;
         }
 
-
         mRecipeList = findViewById(R.id.appwidget_recipe_list);
-        populateListRecipe();
+        mAdapter = new SimpleListAdapter();
+
+       populateListRecipe();
     }
 
     private void populateListRecipe(){
-        List<Recipe> recipes = new DataUtils(this).getData();
-        SimpleListAdapter adapter = new SimpleListAdapter( recipes);
-        mRecipeList.setAdapter(adapter);
+
+        AppExecutors.getInstance().diskIO().execute(
+            new Runnable() {
+                @Override
+                public void run() {
+                    DataRepository repository = ((BasicApp) getApplication()).getRepository();
+                    mRecipeList.setAdapter(mAdapter);
+                    mAdapter.setItems(repository.getRecipes());
+                    mAdapter.notifyDataSetChanged();
+                }
+            });
     }
 
-    private void launchAppWidget(int recipeID){
-        final Context context = BakingAppWidgetConfigureActivity.this;
+    private void launchAppWidget(Recipe recipe){
+        final Context context = WidgetConfigureActivity.this;
 
         // When a recipe is clicked, its Id is saved in Preferences then the widget is created/updated
-        saveRecipePref(context, mAppWidgetId, recipeID);
+        saveRecipePref(context, mAppWidgetId, recipe);
 
         // It is the responsibility of the configuration activity to update the app widget
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-        RemoteViews rv = BakingAppWidgetProvider.updateAppWidget(context, mAppWidgetId);
+        RemoteViews rv = WidgetProvider.updateAppWidget(context, mAppWidgetId);
         appWidgetManager.updateAppWidget(mAppWidgetId, rv);
 
 
@@ -114,18 +131,19 @@ public class BakingAppWidgetConfigureActivity extends Activity {
         View.OnClickListener mOnClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Recipe item = (Recipe) v.getTag();
-                launchAppWidget(item.getID());
+                launchAppWidget((Recipe) v.getTag());
             }
         };
 
-        public SimpleListAdapter(List items) {
-            mItems = items;
+        public SimpleListAdapter(){
         }
+
+        public void setItems(List items){
+            mItems = items;}
 
         @Override
         public int getCount() {
-            return mItems.size();
+            return (mItems!=null)? mItems.size():0;
         }
 
         @Override

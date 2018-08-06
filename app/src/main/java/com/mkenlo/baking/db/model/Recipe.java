@@ -1,19 +1,26 @@
-package com.mkenlo.baking.model;
+package com.mkenlo.baking.db.model;
 
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Ignore;
+import android.arch.persistence.room.PrimaryKey;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.util.List;
 
+@Entity
+public class Recipe  implements Parcelable {
 
-public class Recipe implements Parcelable {
+    @PrimaryKey
+    public int    id;
+    public int    servings;
+    public String name;
+    public String image;
 
-    int    id;
-    int    servings;
-    String name;
-    String image;
-    List<Ingredient>   ingredients;
-    List<Steps>   steps;
+    @Ignore
+    public List<Ingredient>   ingredients;
+    @Ignore
+    public List<Steps>   steps;
 
 
     public Recipe() {

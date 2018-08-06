@@ -8,15 +8,17 @@ import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
 import com.mkenlo.baking.R;
-import com.mkenlo.baking.model.DataUtils;
-import com.mkenlo.baking.model.Ingredient;
-import com.mkenlo.baking.widget.BakingAppWidgetConfigureActivity;
+import com.mkenlo.baking.db.AppExecutors;
+import com.mkenlo.baking.db.BasicApp;
+import com.mkenlo.baking.db.DataRepository;
+import com.mkenlo.baking.db.model.Ingredient;
+import com.mkenlo.baking.db.model.Recipe;
 
 
 import java.util.List;
 
-public class BakingAppWidgetService extends RemoteViewsService {
-    public BakingAppWidgetService() {
+public class WidgetService extends RemoteViewsService {
+    public WidgetService() {
     }
 
 
@@ -26,14 +28,15 @@ public class BakingAppWidgetService extends RemoteViewsService {
     }
 
 
-    public class ListRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory{
+    public class ListRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 
         private Context mContext;
         private int mAppWidgetId;
         private List<Ingredient> mWidgetItems;
+        private int mChosenRecipeId;
 
         public ListRemoteViewsFactory(Context context, Intent intent) {
-            mContext  = context;
+            mContext = context;
             mAppWidgetId = intent.getIntExtra(
                     AppWidgetManager.EXTRA_APPWIDGET_ID,
                     AppWidgetManager.INVALID_APPWIDGET_ID);
@@ -41,23 +44,33 @@ public class BakingAppWidgetService extends RemoteViewsService {
 
         @Override
         public void onCreate() {
-            int recipeId = BakingAppWidgetConfigureActivity.loadRecipePref(mContext, mAppWidgetId);
-            mWidgetItems = new DataUtils(mContext).getData().get(recipeId-1).getIngredients();
+            Recipe recipe = WidgetConfigureActivity.loadRecipePref(mContext, mAppWidgetId);
+            mChosenRecipeId = recipe.getID();
         }
 
         @Override
         public void onDataSetChanged() {
 
+            AppExecutors.getInstance().diskIO().execute(
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            DataRepository repository = ((BasicApp) getApplication()).getRepository();
+                            mWidgetItems = repository.getIngredientsByRecipeId(mChosenRecipeId);
+
+                        }
+                    });
         }
 
         @Override
         public void onDestroy() {
-            mWidgetItems.clear();
+            if(mWidgetItems!=null)
+                mWidgetItems.clear();
         }
 
         @Override
         public int getCount() {
-            return mWidgetItems.size();
+            return (mWidgetItems!=null)? mWidgetItems.size():0;
         }
 
         @Override
@@ -87,4 +100,6 @@ public class BakingAppWidgetService extends RemoteViewsService {
             return false;
         }
     }
+
+
 }

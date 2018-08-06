@@ -4,6 +4,8 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,7 +21,7 @@ import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
-import com.mkenlo.baking.model.Steps;
+import com.mkenlo.baking.db.model.Steps;
 import com.mkenlo.baking.utils.Constants;
 
 import butterknife.BindView;
@@ -28,10 +30,8 @@ import butterknife.ButterKnife;
 
 public class RecipeStepFragment extends Fragment {
 
-    public static String ARG_STEP_ITEM = "recipe_step_item";
-    public static String ARG_LAST_STEP = "last_step_item";
 
-
+    public static String STATE_PLAYBACK_POSITION = "playback_position";
     private Steps mStep;
     private boolean mIsLastStep;
     private OnFragmentInteractionListener mListener;
@@ -69,7 +69,7 @@ public class RecipeStepFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        if ((Util.SDK_INT <= 23 || mExoPlayer == null)) {
+        if ((Util.SDK_INT <= 23 || mExoPlayer == null) && mStep.getVideoURL()!=null) {
             initializePlayer(Uri.parse(mStep.getVideoURL()));
         }
         hideSystemUi();
@@ -105,7 +105,7 @@ public class RecipeStepFragment extends Fragment {
             */
             if(rootView.findViewById(R.id.layout_step_detail)!=null){
 
-                ((TextView)rootView.findViewById(R.id.tv_step_id)).setText("Step #" + mStep.getID());
+                ((TextView)rootView.findViewById(R.id.tv_step_id)).setText("Step #" + mStep.getId());
                 ((TextView)rootView.findViewById(R.id.tv_step_desc)).setText(mStep.getDescription());
 
                 Button mNextStepButton = rootView.findViewById(R.id.bt_next_step);
@@ -118,7 +118,7 @@ public class RecipeStepFragment extends Fragment {
                     mNextStepButton.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            mListener.onButtonNextStepClicked(mStep.getID()+1);
+                            mListener.onButtonNextStepClicked(mStep.getId()+1);
                         }
                     });}
             }
@@ -193,5 +193,17 @@ public class RecipeStepFragment extends Fragment {
                 | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
     }
 
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        mPlayBackPosition = savedInstanceState.getLong(STATE_PLAYBACK_POSITION);
+    }
 
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        outState.putLong(STATE_PLAYBACK_POSITION, mExoPlayer.getCurrentPosition());
+        super.onSaveInstanceState(outState);
+
+
+    }
 }

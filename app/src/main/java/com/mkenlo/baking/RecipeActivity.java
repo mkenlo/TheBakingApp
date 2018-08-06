@@ -1,7 +1,10 @@
 package com.mkenlo.baking;
 
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -14,8 +17,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.mkenlo.baking.model.DataUtils;
-import com.mkenlo.baking.model.Recipe;
+import com.mkenlo.baking.db.model.Recipe;
+import com.mkenlo.baking.db.viewmodel.RecipeListViewModel;
 import com.mkenlo.baking.utils.Constants;
 import com.squareup.picasso.Picasso;
 
@@ -26,9 +29,10 @@ import butterknife.ButterKnife;
 
 public class RecipeActivity extends AppCompatActivity {
 
-    @BindView(R.id.rv_recipe_list) RecyclerView mRecipeListView;
+    public @BindView(R.id.rv_recipe_list)
+    RecyclerView mRecipeListView;
     private RecyclerView.LayoutManager mLayoutManager;
-
+    private RecipeListAdapter mAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,10 +42,20 @@ public class RecipeActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         mLayoutManager = new GridLayoutManager(this, calculateBestColumnCount());
         mRecipeListView.setLayoutManager(mLayoutManager);
-        mRecipeListView.setAdapter(new RecipeListAdapter(new DataUtils(this).getData()));
+        mAdapter = new RecipeListAdapter();
+        mRecipeListView.setAdapter(mAdapter);
+
+        RecipeListViewModel viewModel = ViewModelProviders.of(this).get(RecipeListViewModel.class);
+        viewModel.getAllRecipes().observe(this, new Observer<List<Recipe>>() {
+            @Override
+            public void onChanged(@Nullable List<Recipe> recipes) {
+                mAdapter.setValues(recipes);
+                mAdapter.notifyDataSetChanged();
+            }
+        });
     }
 
-    public class RecipeListAdapter extends RecyclerView.Adapter<RecipeListAdapter.ViewHolder>{
+    public class RecipeListAdapter extends RecyclerView.Adapter<RecipeListAdapter.ViewHolder> {
 
 
         private List<Recipe> mValues;
@@ -51,13 +65,17 @@ public class RecipeActivity extends AppCompatActivity {
 
                 Recipe item = (Recipe) view.getTag();
                 Intent intent = new Intent(view.getContext(), RecipeDetailActivity.class);
-                intent.putExtra(Constants.KEY_ITEM_RECIPE, item);
+                intent.putExtra(Constants.KEY_ITEM_RECIPE_ID, item.getID());
                 startActivity(intent);
             }
 
         };
 
-        public RecipeListAdapter(List<Recipe> mValues) {
+        public RecipeListAdapter() {
+
+        }
+
+        public void setValues(List<Recipe> mValues) {
             this.mValues = mValues;
         }
 
@@ -74,7 +92,7 @@ public class RecipeActivity extends AppCompatActivity {
         public void onBindViewHolder(@NonNull RecipeListAdapter.ViewHolder holder, int position) {
             holder.name.setText(mValues.get(position).getName());
             int dummyIcon = R.drawable.ic_muffin;
-            if(!mValues.get(position).getImage().isEmpty())
+            if (!mValues.get(position).getImage().isEmpty())
                 Picasso.get()
                         .load(mValues.get(position).getImage())
                         .placeholder(dummyIcon)
@@ -87,12 +105,15 @@ public class RecipeActivity extends AppCompatActivity {
 
         @Override
         public int getItemCount() {
-            return mValues.size();
+            return (mValues != null) ? mValues.size() : 0;
         }
 
-        public class ViewHolder extends RecyclerView.ViewHolder{
-            @BindView(R.id.tv_recipe_name) TextView name;
-            @BindView(R.id.iv_dummy_icon)  ImageView dummyIcon;
+        public class ViewHolder extends RecyclerView.ViewHolder {
+            @BindView(R.id.tv_recipe_name)
+            TextView name;
+            @BindView(R.id.iv_dummy_icon)
+            ImageView dummyIcon;
+
             public ViewHolder(View itemView) {
                 super(itemView);
                 ButterKnife.bind(this, itemView);

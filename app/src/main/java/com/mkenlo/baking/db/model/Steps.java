@@ -1,33 +1,36 @@
-package com.mkenlo.baking.model;
+package com.mkenlo.baking.db.model;
 
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.ForeignKey;
+import android.arch.persistence.room.Index;
+import android.arch.persistence.room.PrimaryKey;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
+@Entity(foreignKeys = @ForeignKey(entity = Recipe.class,
+        parentColumns = "id",
+        childColumns = "recipeId"), indices = {@Index(value = "recipeId")})
 public class Steps implements Parcelable {
 
-    int id;
-    String shortDescription;
-    String description;
-    String videoURL;
-    String thumbnailURL;
+    @Expose
+    public int id;
+    @Expose
+    public String shortDescription;
+    @Expose
+    public String description;
+    @Expose
+    public String videoURL;
+    @Expose
+    public String thumbnailURL;
+
+    @PrimaryKey(autoGenerate = true)
+    public int stepId;
+    public int recipeId;
 
     public Steps() {
-    }
-
-    public Steps(int ID, String shortDescription, String description, String videoURL, String thumbsnailURL) {
-        this.id = ID;
-        this.shortDescription = shortDescription;
-        this.description = description;
-        this.videoURL = videoURL;
-        this.thumbnailURL = thumbsnailURL;
-    }
-
-    public int getID() {
-        return id;
-    }
-
-    public void setID(int ID) {
-        this.id = ID;
     }
 
     public String getShortDescription() {
@@ -62,6 +65,30 @@ public class Steps implements Parcelable {
         this.thumbnailURL = thumbnailURL;
     }
 
+    public int getRecipeId() {
+        return recipeId;
+    }
+
+    public void setRecipeId(int recipeId) {
+        this.recipeId = recipeId;
+    }
+
+    public int getStepId() {
+        return stepId;
+    }
+
+    public void setStepId(int key) {
+        this.stepId = key;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int num) {
+        this.id = num;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -75,7 +102,6 @@ public class Steps implements Parcelable {
         dest.writeString(videoURL);
         dest.writeString(thumbnailURL);
     }
-
 
     public static final Parcelable.Creator<Steps> CREATOR
             = new Parcelable.Creator<Steps>() {
@@ -94,7 +120,6 @@ public class Steps implements Parcelable {
         this.description = in.readString();
         this.videoURL = in.readString();
         this.thumbnailURL = in.readString();
-
     }
 
     @Override

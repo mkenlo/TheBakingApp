@@ -195,8 +195,10 @@ public class RecipeStepFragment extends Fragment {
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+
         super.onActivityCreated(savedInstanceState);
-        mPlayBackPosition = savedInstanceState.getLong(STATE_PLAYBACK_POSITION);
+        if(savedInstanceState!=null)
+            mPlayBackPosition = savedInstanceState.getLong(STATE_PLAYBACK_POSITION);
     }
 
     @Override

@@ -32,6 +32,8 @@ public class RecipeStepFragment extends Fragment {
 
 
     public static String STATE_PLAYBACK_POSITION = "playback_position";
+    public static String STATE_PLAYWHENREADY = "play_when_ready_position";
+
     private Steps mStep;
     private boolean mIsLastStep;
     private OnFragmentInteractionListener mListener;
@@ -122,8 +124,6 @@ public class RecipeStepFragment extends Fragment {
                         }
                     });}
             }
-
-
         }
 
         return rootView;
@@ -135,9 +135,10 @@ public class RecipeStepFragment extends Fragment {
                 new DefaultTrackSelector());
 
         mStepPlayerView.setPlayer(mExoPlayer);
+        mExoPlayer.prepare(buildMediaSource(videoUri));
         mExoPlayer.setPlayWhenReady(mPlayWhenReady);
         mExoPlayer.seekTo(mPlayBackPosition);
-        mExoPlayer.prepare(buildMediaSource(videoUri));
+
     }
 
     private void releasePlayer() {
@@ -197,15 +198,17 @@ public class RecipeStepFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
 
         super.onActivityCreated(savedInstanceState);
-        if(savedInstanceState!=null)
+        if(savedInstanceState!=null){
             mPlayBackPosition = savedInstanceState.getLong(STATE_PLAYBACK_POSITION);
+            mPlayWhenReady = savedInstanceState.getBoolean(STATE_PLAYWHENREADY);
+        }
     }
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         outState.putLong(STATE_PLAYBACK_POSITION, mExoPlayer.getCurrentPosition());
+        outState.putBoolean(STATE_PLAYWHENREADY, mExoPlayer.getPlayWhenReady());
         super.onSaveInstanceState(outState);
-
 
     }
 }
